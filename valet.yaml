@@ -1,0 +1,70 @@
+name: sheets-vendor-list
+display_name: Sheets Vendor List
+description: >-
+  Tracks vendor approvals, expirations, and renewal windows in a
+  Google Sheet. Every weekday at 9am Pacific, pings owners in
+  Slack about contracts renewing in 30, 60, or 90 days, and
+  answers vendor questions on @mention.
+category: procurement
+
+story:
+  hero: "Your vendor list, kept current without a contract review meeting."
+  subheadline: >-
+    Tracks approvals, expirations, and renewal windows — pings
+    owners 60 days out so nothing lapses unnoticed.
+  steps:
+    - role: trigger
+      title: "9am hits."
+      body: >-
+        The cron fires Monday through Friday. No quarterly review
+        meeting, no one to nudge.
+    - role: action
+      title: "It reads your vendor sheet."
+      body: >-
+        Opens the vendor list, computes days-to-end for every
+        contract, and groups what's renewing in 30, 60, and 90
+        days.
+      catalog: google-sheets
+    - role: outcome
+      title: "Renewal alerts grouped by window — posted in Slack."
+      body: >-
+        Each row tagged with the owner, end date, and current
+        approval state. URGENT prefix on anything inside 30 days.
+      catalog: slack
+
+connectors:
+  - catalog: google-sheets
+    description: >-
+      The Google Sheets MCP server, OAuth-authenticated. The agent
+      reads the vendor sheet — vendor name, owner, owner email,
+      approval status, contract end date — to compute renewal
+      windows and answer questions. Sheet edits (logging an
+      approval, marking renewed) only happen when a Slack user
+      explicitly asks and confirms.
+    ui:
+      headline: "Connect Google Sheets with one click."
+      blurb: >-
+        OAuth into Google — no API key to paste. The agent uses
+        your Google permissions to read the vendor list and make
+        edits you confirm in Slack.
+      done_note: "Google Sheets connected"
+
+channels:
+  - catalog: slack
+    description: >-
+      The agent gets its own Slack bot. Invite it to whichever
+      channels you want the daily renewal alerts in, and to any
+      other channel where teammates should be able to @mention it
+      for ad-hoc vendor questions.
+    ui:
+      headline: "Give Sheets Vendor List a Slack bot."
+      blurb: >-
+        The agent posts the daily renewal digest to every channel
+        you invite it to. Invite it to a procurement channel, or
+        several — whatever matches how your team works.
+      done_note: "Bot ready — invite it to a channel"
+
+  - type: cron
+    cron: "0 9 * * 1-5"
+    timezone: America/Los_Angeles
+    description: "Fires the daily vendor renewal-window check at 9am Pacific, Monday through Friday."
