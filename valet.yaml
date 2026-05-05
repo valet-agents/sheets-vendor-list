@@ -7,6 +7,9 @@ description: >-
   answers vendor questions on @mention.
 category: procurement
 
+example:
+  prompt: "Which contracts are renewing in 60 days?"
+
 story:
   hero: "Your vendor list, kept current without a contract review meeting."
   subheadline: >-
